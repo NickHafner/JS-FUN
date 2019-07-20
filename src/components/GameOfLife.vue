@@ -13,8 +13,8 @@ export default {
             cells: [],
             continue: false,
             canvas: null,
-            canvasWidth: 900,
-            canvasHeight: 1024,
+            canvasWidth: 812,
+            canvasHeight: 812,
             gameWidth: 100,
             gameHeight: 100
         }
@@ -23,21 +23,22 @@ export default {
         this.canvas = document.getElementById('game').getContext("2d");
         this.canvas.strokeStyle = "#e1e1e1";
         this.canvas.fillStyle = "cadetblue";
-        this.fillCanvasSet_Acorn();
-        this.update();
+        this.fillCanvasSet_R_pentomino();
     },
     methods: {
-        fillCanvasRandom(){
-
-        },
-        fillCanvasSet_GliderGun() {
+        setUpCanvas() {
             for (let i=0; i<this.gameWidth; i++) {
                 this.cells[i] = [];
                 for (let j=0; j<this.gameHeight; j++) {
                     this.cells[i][j] = 0;
                 }
             }
-            
+        },
+        fillCanvasRandom(){
+
+        },
+        fillCanvasSet_GliderGun() {
+            this.setUpCanvas();
             // Gosper glider gun
             [
                 [1, 5],[1, 6],[2, 5],[2, 6],[11, 5],[11, 6],[11, 7],[12, 4],[12, 8],[13, 3],
@@ -49,15 +50,11 @@ export default {
             .forEach((point) => {
                 this.cells[point[0]][point[1]] = 1;
             });
+
+            this.draw();
         },
         fillCanvasSet_Acorn() {
-            for (let i=0; i<this.gameWidth; i++) {
-                this.cells[i] = [];
-                for (let j=0; j<this.gameHeight; j++) {
-                    this.cells[i][j] = 0;
-                }
-            }
-            
+            this.setUpCanvas();            
             // Acorn
             [
                 [72, 64],[73,64],[73,62],[75,63],[76,64],[77,64],[78,64]
@@ -66,15 +63,40 @@ export default {
             .forEach((point) => {
                 this.cells[point[0]][point[1]] = 1;
             });
+
+            this.draw();
+        },
+        fillCanvasSet_R_pentomino() {
+            this.setUpCanvas();            
+            // The R-pentomino
+            [
+                [42, 48],[43,48],[43,49],[43,47],[44,47]
+            ]
+            //This marks the above cells as "Alive"
+            .forEach((point) => {
+                this.cells[point[0]][point[1]] = 1;
+            });
+
+            this.draw();
+        },
+        fillCanvasSet_Diehard() {
+            this.setUpCanvas();            
+            // Diehard pattern x4
+            [
+                [70, 24],[71,24],[71,25],[75,25],[76,25],[77,25],[76,23],
+                [30, 24],[31,24],[31,25],[35,25],[36,25],[37,25],[36,23],
+                [70, 64],[71,64],[71,65],[75,65],[76,65],[77,65],[76,63],
+                [30, 64],[31,64],[31,65],[35,65],[36,65],[37,65],[36,63]
+            ]
+            //This marks the above cells as "Alive"
+            .forEach((point) => {
+                this.cells[point[0]][point[1]] = 1;
+            });
+
+            this.draw();
         },
         fillCanvasSet_StillLife() {
-            for (let i=0; i<this.gameWidth; i++) {
-                this.cells[i] = [];
-                for (let j=0; j<this.gameHeight; j++) {
-                    this.cells[i][j] = 0;
-                }
-            }
-            
+            this.setUpCanvas();
             // Still Life
             [
                 [1, 5],[1, 6],[2, 5],[2, 6],

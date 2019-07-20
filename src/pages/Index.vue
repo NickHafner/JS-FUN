@@ -1,7 +1,8 @@
 <template>
 <div>
-  <Layout>
-    
+  <Header />
+
+<v-container grid-list-md fluid>
     <!-- Learn how to use images here: https://gridsome.org/docs/images -->
     <!-- <g-image alt="Example image" src="~/favicon.png" width="135" />
     
@@ -16,19 +17,29 @@
       <a href="https://github.com/gridsome/gridsome" target="_blank" rel="noopener">GitHub</a>
     </p> -->
     <GameOfLife />  
-  </Layout>
+</v-container>
 </div>
 </template>
 
 <script>
 import GameOfLife from '@/components/GameOfLife.vue';
+import Header from '@/components/Header.vue';
+import 'vuetify/dist/vuetify.min.css'
+import Vuetify from 'vuetify';
+
+
 export default {
   components: {
     GameOfLife,
-    curComponent: "GameOfLife"
+    Header
   },
-  metaInfo: {
-    title: 'Hello, world!'
+  data() {
+    return {
+      
+    }
+  },
+  methods: {
+
   }
 }
 </script>

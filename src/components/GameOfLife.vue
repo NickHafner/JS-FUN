@@ -1,9 +1,49 @@
 <template>
-    <div>
-        <button @click="stop">stop</button>
-        <button @click="start">start</button>
+<div>
+    <div class="canvas-container">
         <canvas id="game" :width="canvasWidth" :height="canvasHeight"></canvas>
     </div>
+
+<v-layout row>
+  <v-flex md4 sm4 xs4 offset-md2>
+    <v-menu transition="scale-transition">
+      <template v-slot:activator="{ on }">
+        <v-btn
+          dark
+          color="primary"
+          v-on="on"
+        >
+          {{currentPattern}}
+        </v-btn>
+      </template>
+      <v-list>
+        <v-list-tile @click="still">
+          <v-list-tile-title v-text="'Still Life'"></v-list-tile-title>
+        </v-list-tile>
+        <v-list-tile @click="glider">
+          <v-list-tile-title v-text="'Glider Gun'"></v-list-tile-title>
+        </v-list-tile>
+        <v-list-tile @click="diehard">
+          <v-list-tile-title v-text="'Diehard'"></v-list-tile-title>
+        </v-list-tile>
+        <v-list-tile @click="acorn">
+          <v-list-tile-title v-text="'Acorn Pattern'"></v-list-tile-title>
+        </v-list-tile>
+        <v-list-tile @click="pento">
+          <v-list-tile-title v-text="'R-Pentomino'"></v-list-tile-title>
+        </v-list-tile>
+      </v-list>
+    </v-menu>
+  </v-flex>
+</v-layout>
+<v-layout>
+    <v-flex md6 offset-md2>
+        <v-btn @click="reset" right>Reset</v-btn>  
+        <v-btn @click="go" right>Go</v-btn>
+    </v-flex>
+</v-layout>
+</div>
+    
 </template>
 <script>
 export default {
@@ -16,14 +56,15 @@ export default {
             canvasWidth: 812,
             canvasHeight: 812,
             gameWidth: 100,
-            gameHeight: 100
+            gameHeight: 100,
+            currentPattern: "Acorn Pattern"
         }
     },
     mounted() {
         this.canvas = document.getElementById('game').getContext("2d");
         this.canvas.strokeStyle = "#e1e1e1";
         this.canvas.fillStyle = "cadetblue";
-        this.fillCanvasSet_R_pentomino();
+        this.fillCanvasSet_Acorn();
     },
     methods: {
         setUpCanvas() {
@@ -180,13 +221,43 @@ export default {
         stop(){
             this.continue = false;
         },
-        start(){
+        destroyed() {
+            this.continue = false;
+        },
+        //Button stuff
+        still() {
+            this.continue = false;
+            this.currentPattern = "Still Life";
+            this.fillCanvasSet_StillLife();
+        },
+        diehard() {
+            this.continue = false;
+            this.currentPattern = "Diehard";
+            this.fillCanvasSet_Diehard();
+        },
+        acorn(){
+            this.continue = false;
+            this.currentPattern = "Acorn Pattern";
+            this.fillCanvasSet_Acorn();
+        },
+        pento() {
+            this.continue = false;
+            this.currentPattern = "R-Pentomino";
+            this.fillCanvasSet_R_pentomino();
+        },
+        glider() {
+            this.continue = false;
+            this.currentPattern = "Glider Gun";
+            this.fillCanvasSet_GliderGun();
+        },
+        go(){
+            this.continue = false;
             this.continue = true;
             this.update();
+        },
+        reset(){
+
         }
-    },
-    destroyed() {
-        this.continue = false
     }
 }
 
@@ -194,6 +265,12 @@ export default {
 <style scoped>
 canvas {    
     width: 100%;
+}
+.canvas-container {
+  position: relative;
+  max-width: 1024px;
+  min-width: 320px;
+  margin: 0 auto;
 }
 </style>
 

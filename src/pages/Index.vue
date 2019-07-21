@@ -1,5 +1,5 @@
 <template>
-<div>
+<v-app>
   <Header />
   <v-container grid-list-md fluid>
       <!-- Learn how to use images here: https://gridsome.org/docs/images -->
@@ -18,7 +18,7 @@
       <GameOfLife />  
   </v-container>
   <Footer />
-</div>
+</v-app>
 </template>
 
 <script>

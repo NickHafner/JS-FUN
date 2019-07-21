@@ -4,22 +4,23 @@
         <canvas id="game" :width="canvasWidth" :height="canvasHeight"></canvas>
     </div>
 
-<v-layout row align-center>
-  <v-flex md4 sm12 xs12 offset-md2>
-      Patterns:
-      <v-overflow-btn
-        @change="patternChange"
-        :items="patternTypes"
-        label="Acorn"
-        ></v-overflow-btn>
-  </v-flex>
-</v-layout>
-<v-layout>
-    <v-flex xs3 md6 offset-md2 offset-xs9 >
-        <v-btn color="info" @click="reset" right>Reset</v-btn>  
-        <v-btn color="success" @click="go" right>Go</v-btn>
+    <v-layout row align-center>
+    <v-flex md4 sm12 xs12 offset-md2>
+        Patterns:
+        <v-overflow-btn
+            v-model="selectedPattern"
+            @change="patternChange"
+            :items="patternTypes"
+            label="Acorn"
+            ></v-overflow-btn>
     </v-flex>
-</v-layout>
+    </v-layout>
+    <v-layout>
+        <v-flex xs3 md6 offset-md2 offset-sm10 offset-xs9 >
+            <v-btn color="info" @click="reset" right>Reset</v-btn>  
+            <v-btn :color="startColor" @click="toggle" right>{{goOrStop}}</v-btn>
+        </v-flex>
+    </v-layout>
 </div>
     
 </template>
@@ -29,6 +30,7 @@ export default {
     data() {
         return {
             cells: [],
+            selectedPattern: "Acorn",
             continue: false,
             canvas: null,
             canvasWidth: 812,
@@ -36,13 +38,15 @@ export default {
             gameWidth: 124,
             gameHeight: 124,
             currentPattern: "Acorn",
+            startColor: "success",
+            goOrStop: 'Go',
             patternTypes: [
-                { text: 'Still Life', callback: () => console.log('thing')},
-                { text: 'Acorn', callback: () => console.log('thing')},
-                { text: 'Glider Gun', callback: () => console.log('thing')},
-                { text: 'Diehard', callback: () => console.log('thing')},
-                { text: 'R-Pentomino', callback: () => console.log('thing')},
-                { text: 'Random', callback: () => console.log('thing')},
+                { text: 'Still Life'},
+                { text: 'Acorn'},
+                { text: 'Glider Gun'},
+                { text: 'Diehard'},
+                { text: 'R-Pentomino'},
+                { text: 'Random'},
             ]
         }
     },
@@ -62,7 +66,6 @@ export default {
             }
         },
         fillCanvasRandom(){
-            console.log(this.cells);
             this.cells.forEach((row, x) => {
                 row.forEach((cell, y) => {
                     if (Math.random() >= 0.5){
@@ -70,7 +73,6 @@ export default {
                     }
                 });
             });
-            console.log(this.cells);
             this.draw();
         },
         fillCanvasSet_GliderGun() {
@@ -216,50 +218,24 @@ export default {
                 if(this.continue) this.update();
             }, 1);
         },
-        stop(){
-            this.continue = false;
+        toggle(){
+            if(!this.continue){
+                this.continue = true;
+                this.goOrStop = 'Stop';
+                this.startColor = 'error';
+            }
+            else {
+                this.continue = false;
+                this.goOrStop = 'Go';
+                this.startColor = 'success';
+            }
+            this.draw();
         },
         destroyed() {
             this.continue = false;
         },
-        //Button stuff
-        still() {
-            this.continue = false;
-            this.currentPattern = "Still Life";
-            this.fillCanvasSet_StillLife();
-        },
-        diehard() {
-            this.continue = false;
-            this.currentPattern = "Diehard";
-            this.fillCanvasSet_Diehard();
-        },
-        acorn(){
-            this.continue = false;
-            this.currentPattern = "Acorn";
-            this.fillCanvasSet_Acorn();
-        },
-        pento() {
-            this.continue = false;
-            this.currentPattern = "R-Pentomino";
-            this.fillCanvasSet_R_pentomino();
-        },
-        glider() {
-            this.continue = false;
-            this.currentPattern = "Glider Gun";
-            this.fillCanvasSet_GliderGun();
-        },
-        random() {
-            this.continue = false;
-            this.currentPattern = "Random";
-            this.fillCanvasRandom();
-        },
-        go(){
-            this.continue = false;
-            this.continue = true;
-            this.update();
-        },
         reset(){
-
+            this.patternChange(this.selectedPattern);
         },
         patternChange(e) {
             this.continue = false;

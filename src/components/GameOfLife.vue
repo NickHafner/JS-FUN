@@ -4,20 +4,26 @@
         <canvas id="game" :width="canvasWidth" :height="canvasHeight"></canvas>
     </div>
     <v-layout row align-center>       
-        <v-flex md2 sm12 xs12 offset-md8>
-            <br>Living Cells: {{displayCount}} <br>Generation: {{generation}}
+        <v-flex md3 sm12 xs12 offset-md6>
+            <v-flex md7 offset-md5>
+                <br>Living Cells: {{displayCount}} <br>Generation: {{generation}}
+            </v-flex>
+            <v-flex md7 offset-md5>
             <v-overflow-btn
                 v-model="selectedPattern"
                 @change="patternChange"
                 :items="patternTypes"
                 label="Acorn"
                 ></v-overflow-btn>
+            </v-flex>
         </v-flex>
     </v-layout>
     <v-layout>
-        <v-flex xs3 md6 offset-md8 offset-sm10 offset-xs9 >
-            &nbsp;&nbsp;&nbsp;<v-btn color="info" @click="reset" right>Reset</v-btn>  
-            <v-btn :color="startColor" @click="toggle" right>{{goOrStop}}</v-btn>
+        <v-flex xs3 md2 offset-md7 offset-sm10 offset-xs9 >
+            <div class="text-xs-center">
+                <v-btn color="info" @click="reset" right>Reset</v-btn>  
+                <v-btn :color="startColor" @click="toggle" right>{{goOrStop}}</v-btn>
+            </div>
         </v-flex>
     </v-layout>
 </div>

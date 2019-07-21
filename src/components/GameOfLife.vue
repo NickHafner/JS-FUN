@@ -4,8 +4,9 @@
         <canvas id="game" :width="canvasWidth" :height="canvasHeight"></canvas>
     </div>
 
-<v-layout row>
+<v-layout row align-center>
   <v-flex md4 sm4 xs4 offset-md2>
+      Patterns:
     <v-menu transition="scale-transition">
       <template v-slot:activator="{ on }">
         <v-btn
@@ -27,7 +28,10 @@
           <v-list-tile-title v-text="'Diehard'"></v-list-tile-title>
         </v-list-tile>
         <v-list-tile @click="acorn">
-          <v-list-tile-title v-text="'Acorn Pattern'"></v-list-tile-title>
+          <v-list-tile-title v-text="'Acorn'"></v-list-tile-title>
+        </v-list-tile>        
+        <v-list-tile @click="random">
+          <v-list-tile-title v-text="'Random'"></v-list-tile-title>
         </v-list-tile>
         <v-list-tile @click="pento">
           <v-list-tile-title v-text="'R-Pentomino'"></v-list-tile-title>
@@ -57,7 +61,7 @@ export default {
             canvasHeight: 812,
             gameWidth: 100,
             gameHeight: 100,
-            currentPattern: "Acorn Pattern"
+            currentPattern: "Acorn"
         }
     },
     mounted() {
@@ -76,7 +80,16 @@ export default {
             }
         },
         fillCanvasRandom(){
-
+            console.log(this.cells);
+            this.cells.forEach((row, x) => {
+                row.forEach((cell, y) => {
+                    if (Math.random() >= 0.5){
+                        this.cells[x][y] = 1;
+                    }
+                });
+            });
+            console.log(this.cells);
+            this.draw();
         },
         fillCanvasSet_GliderGun() {
             this.setUpCanvas();
@@ -115,6 +128,7 @@ export default {
             ]
             //This marks the above cells as "Alive"
             .forEach((point) => {
+
                 this.cells[point[0]][point[1]] = 1;
             });
 
@@ -151,7 +165,7 @@ export default {
                 this.cells[point[0]][point[1]] = 1;
             });   
 
-            // Oscillators
+            // TODO: Oscillators
             [
 
             ]
@@ -237,7 +251,7 @@ export default {
         },
         acorn(){
             this.continue = false;
-            this.currentPattern = "Acorn Pattern";
+            this.currentPattern = "Acorn";
             this.fillCanvasSet_Acorn();
         },
         pento() {
@@ -249,6 +263,11 @@ export default {
             this.continue = false;
             this.currentPattern = "Glider Gun";
             this.fillCanvasSet_GliderGun();
+        },
+        random() {
+            this.continue = false;
+            this.currentPattern = "Random";
+            this.fillCanvasRandom();
         },
         go(){
             this.continue = false;

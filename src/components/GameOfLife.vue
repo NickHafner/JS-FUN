@@ -4,7 +4,7 @@
         <canvas id="game" :width="canvasWidth" :height="canvasHeight"></canvas>
     </div>
     <v-layout row align-center>       
-        <v-flex md3 sm12 xs12 offset-md7>
+        <v-flex md2 sm12 xs12 offset-md8>
             <br>Living Cells: {{displayCount}} <br>Generation: {{generation}}
             <v-overflow-btn
                 v-model="selectedPattern"
@@ -16,7 +16,7 @@
     </v-layout>
     <v-layout>
         <v-flex xs3 md6 offset-md8 offset-sm10 offset-xs9 >
-            <v-btn color="info" @click="reset" right>Reset</v-btn>  
+            &nbsp;&nbsp;&nbsp;<v-btn color="info" @click="reset" right>Reset</v-btn>  
             <v-btn :color="startColor" @click="toggle" right>{{goOrStop}}</v-btn>
         </v-flex>
     </v-layout>

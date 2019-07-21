@@ -4,48 +4,23 @@
         <canvas id="game" :width="canvasWidth" :height="canvasHeight"></canvas>
     </div>
 
-<v-layout row align-center>
-  <v-flex md4 sm4 xs4 offset-md2>
-      Patterns:
-    <v-menu transition="scale-transition">
-      <template v-slot:activator="{ on }">
-        <v-btn
-          dark
-          color="primary"
-          v-on="on"
-        >
-          {{currentPattern}}
-        </v-btn>
-      </template>
-      <v-list>
-        <v-list-tile @click="still">
-          <v-list-tile-title v-text="'Still Life'"></v-list-tile-title>
-        </v-list-tile>
-        <v-list-tile @click="glider">
-          <v-list-tile-title v-text="'Glider Gun'"></v-list-tile-title>
-        </v-list-tile>
-        <v-list-tile @click="diehard">
-          <v-list-tile-title v-text="'Diehard'"></v-list-tile-title>
-        </v-list-tile>
-        <v-list-tile @click="acorn">
-          <v-list-tile-title v-text="'Acorn'"></v-list-tile-title>
-        </v-list-tile>        
-        <v-list-tile @click="random">
-          <v-list-tile-title v-text="'Random'"></v-list-tile-title>
-        </v-list-tile>
-        <v-list-tile @click="pento">
-          <v-list-tile-title v-text="'R-Pentomino'"></v-list-tile-title>
-        </v-list-tile>
-      </v-list>
-    </v-menu>
-  </v-flex>
-</v-layout>
-<v-layout>
-    <v-flex md6 offset-md2>
-        <v-btn @click="reset" right>Reset</v-btn>  
-        <v-btn @click="go" right>Go</v-btn>
+    <v-layout row align-center>
+    <v-flex md4 sm12 xs12 offset-md2>
+        Patterns:
+        <v-overflow-btn
+            v-model="selectedPattern"
+            @change="patternChange"
+            :items="patternTypes"
+            label="Acorn"
+            ></v-overflow-btn>
     </v-flex>
-</v-layout>
+    </v-layout>
+    <v-layout>
+        <v-flex xs3 md6 offset-md2 offset-sm10 offset-xs9 >
+            <v-btn color="info" @click="reset" right>Reset</v-btn>  
+            <v-btn :color="startColor" @click="toggle" right>{{goOrStop}}</v-btn>
+        </v-flex>
+    </v-layout>
 </div>
     
 </template>
@@ -55,13 +30,24 @@ export default {
     data() {
         return {
             cells: [],
+            selectedPattern: "Acorn",
             continue: false,
             canvas: null,
             canvasWidth: 812,
             canvasHeight: 812,
-            gameWidth: 100,
-            gameHeight: 100,
-            currentPattern: "Acorn"
+            gameWidth: 124,
+            gameHeight: 124,
+            currentPattern: "Acorn",
+            startColor: "success",
+            goOrStop: 'Go',
+            patternTypes: [
+                { text: 'Still Life'},
+                { text: 'Acorn'},
+                { text: 'Glider Gun'},
+                { text: 'Diehard'},
+                { text: 'R-Pentomino'},
+                { text: 'Random'},
+            ]
         }
     },
     mounted() {
@@ -80,7 +66,6 @@ export default {
             }
         },
         fillCanvasRandom(){
-            console.log(this.cells);
             this.cells.forEach((row, x) => {
                 row.forEach((cell, y) => {
                     if (Math.random() >= 0.5){
@@ -88,7 +73,6 @@ export default {
                     }
                 });
             });
-            console.log(this.cells);
             this.draw();
         },
         fillCanvasSet_GliderGun() {
@@ -172,6 +156,8 @@ export default {
             .forEach((point) => {
                 this.cells[point[0]][point[1]] = 1;
             });
+            
+            this.draw();
         },        
         update() { 
             let result = [];
@@ -220,7 +206,7 @@ export default {
             this.cells.forEach((row, x) => {
                 row.forEach((cell, y) => {
                     this.canvas.beginPath();
-                    this.canvas.rect(x*8, y*8, 8, 8);
+                    this.canvas.rect(x*7, y*7, 7, 7);
                     if (cell) {
                         this.canvas.fill();
                     } else {
@@ -232,50 +218,50 @@ export default {
                 if(this.continue) this.update();
             }, 1);
         },
-        stop(){
-            this.continue = false;
+        toggle(){
+            if(!this.continue){
+                this.continue = true;
+                this.goOrStop = 'Stop';
+                this.startColor = 'error';
+            }
+            else {
+                this.continue = false;
+                this.goOrStop = 'Go';
+                this.startColor = 'success';
+            }
+            this.draw();
         },
         destroyed() {
             this.continue = false;
         },
-        //Button stuff
-        still() {
-            this.continue = false;
-            this.currentPattern = "Still Life";
-            this.fillCanvasSet_StillLife();
+        reset(){
+            this.patternChange(this.selectedPattern);
         },
-        diehard() {
-            this.continue = false;
-            this.currentPattern = "Diehard";
-            this.fillCanvasSet_Diehard();
-        },
-        acorn(){
-            this.continue = false;
-            this.currentPattern = "Acorn";
-            this.fillCanvasSet_Acorn();
-        },
-        pento() {
-            this.continue = false;
-            this.currentPattern = "R-Pentomino";
-            this.fillCanvasSet_R_pentomino();
-        },
-        glider() {
-            this.continue = false;
-            this.currentPattern = "Glider Gun";
-            this.fillCanvasSet_GliderGun();
-        },
-        random() {
+        patternChange(e) {
             this.continue = false;
             this.currentPattern = "Random";
-            this.fillCanvasRandom();
-        },
-        go(){
-            this.continue = false;
-            this.continue = true;
-            this.update();
-        },
-        reset(){
-
+            switch(e){
+                case 'Acorn':
+                    this.fillCanvasSet_Acorn();
+                    break;
+                case 'Diehard':
+                    this.fillCanvasSet_Diehard();
+                    break;
+                case 'Still Life':
+                    this.fillCanvasSet_StillLife();
+                    break;
+                case 'R-Pentomino':
+                    this.fillCanvasSet_R_pentomino();
+                    break;
+                case 'Random':
+                    this.fillCanvasRandom();
+                    break;
+                case 'Glider Gun':
+                    this.fillCanvasSet_GliderGun();
+                    break;
+                default:
+                    console.log('default');
+            }
         }
     }
 }

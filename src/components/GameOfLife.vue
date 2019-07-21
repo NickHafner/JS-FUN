@@ -3,20 +3,19 @@
     <div class="canvas-container">
         <canvas id="game" :width="canvasWidth" :height="canvasHeight"></canvas>
     </div>
-
-    <v-layout row align-center>
-    <v-flex md4 sm12 xs12 offset-md2>
-        Patterns:
-        <v-overflow-btn
-            v-model="selectedPattern"
-            @change="patternChange"
-            :items="patternTypes"
-            label="Acorn"
-            ></v-overflow-btn>
-    </v-flex>
+    <v-layout row align-center>       
+        <v-flex md3 sm12 xs12 offset-md7>
+            <br>Living Cells: {{displayCount}} <br>Generation: {{generation}}
+            <v-overflow-btn
+                v-model="selectedPattern"
+                @change="patternChange"
+                :items="patternTypes"
+                label="Acorn"
+                ></v-overflow-btn>
+        </v-flex>
     </v-layout>
     <v-layout>
-        <v-flex xs3 md6 offset-md2 offset-sm10 offset-xs9 >
+        <v-flex xs3 md6 offset-md8 offset-sm10 offset-xs9 >
             <v-btn color="info" @click="reset" right>Reset</v-btn>  
             <v-btn :color="startColor" @click="toggle" right>{{goOrStop}}</v-btn>
         </v-flex>
@@ -40,6 +39,9 @@ export default {
             currentPattern: "Acorn",
             startColor: "success",
             goOrStop: 'Go',
+            generation: 0,
+            liveCells: 0,
+            displayCount: 0,
             patternTypes: [
                 { text: 'Still Life'},
                 { text: 'Acorn'},
@@ -54,10 +56,13 @@ export default {
         this.canvas = document.getElementById('game').getContext("2d");
         this.canvas.strokeStyle = "#e1e1e1";
         this.canvas.fillStyle = "cadetblue";
+        this.setUpCanvas();
         this.fillCanvasSet_Acorn();
     },
     methods: {
         setUpCanvas() {
+            this.liveCells = 0;
+            this.generation = 0;
             for (let i=0; i<this.gameWidth; i++) {
                 this.cells[i] = [];
                 for (let j=0; j<this.gameHeight; j++) {
@@ -66,10 +71,13 @@ export default {
             }
         },
         fillCanvasRandom(){
+            this.setUpCanvas();
+            
             this.cells.forEach((row, x) => {
                 row.forEach((cell, y) => {
                     if (Math.random() >= 0.5){
                         this.cells[x][y] = 1;
+                        this.liveCells++;
                     }
                 });
             });
@@ -77,6 +85,7 @@ export default {
         },
         fillCanvasSet_GliderGun() {
             this.setUpCanvas();
+            
             // Gosper glider gun
             [
                 [1, 5],[1, 6],[2, 5],[2, 6],[11, 5],[11, 6],[11, 7],[12, 4],[12, 8],[13, 3],
@@ -87,12 +96,14 @@ export default {
             //This marks the above cells as "Alive"
             .forEach((point) => {
                 this.cells[point[0]][point[1]] = 1;
+                this.liveCells++;
             });
 
             this.draw();
         },
         fillCanvasSet_Acorn() {
-            this.setUpCanvas();            
+            this.setUpCanvas(); 
+                    
             // Acorn
             [
                 [72, 64],[73,64],[73,62],[75,63],[76,64],[77,64],[78,64]
@@ -100,12 +111,14 @@ export default {
             //This marks the above cells as "Alive"
             .forEach((point) => {
                 this.cells[point[0]][point[1]] = 1;
+                this.liveCells++;
             });
 
             this.draw();
         },
         fillCanvasSet_R_pentomino() {
-            this.setUpCanvas();            
+            this.setUpCanvas();     
+                 
             // The R-pentomino
             [
                 [42, 48],[43,48],[43,49],[43,47],[44,47]
@@ -114,12 +127,14 @@ export default {
             .forEach((point) => {
 
                 this.cells[point[0]][point[1]] = 1;
+                this.liveCells++
             });
 
             this.draw();
         },
         fillCanvasSet_Diehard() {
-            this.setUpCanvas();            
+            this.setUpCanvas();  
+
             // Diehard pattern x4
             [
                 [70, 24],[71,24],[71,25],[75,25],[76,25],[77,25],[76,23],
@@ -130,12 +145,14 @@ export default {
             //This marks the above cells as "Alive"
             .forEach((point) => {
                 this.cells[point[0]][point[1]] = 1;
+                this.liveCells++;
             });
 
             this.draw();
         },
         fillCanvasSet_StillLife() {
             this.setUpCanvas();
+            
             // Still Life
             [
                 [1, 5],[1, 6],[2, 5],[2, 6],
@@ -147,21 +164,22 @@ export default {
             ]
             .forEach((point) => {
                 this.cells[point[0]][point[1]] = 1;
+                this.liveCells++;
             });   
-
+            this.displayCount = this.liveCells;
             // TODO: Oscillators
-            [
+            // [
 
-            ]
-            .forEach((point) => {
-                this.cells[point[0]][point[1]] = 1;
-            });
+            // ]
+            // .forEach((point) => {
+            //     this.cells[point[0]][point[1]] = 1;
+            // });
             
             this.draw();
         },        
         update() { 
             let result = [];
-            
+            this.generation++;
             //Return amount of alive neighbours for a cell
             let _countNeighbours = (x, y) => {
                 let amountAlive = 0;
@@ -202,18 +220,21 @@ export default {
             this.draw();
         },
         draw() {
+            this.liveCells = 0;
             this.canvas.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
             this.cells.forEach((row, x) => {
                 row.forEach((cell, y) => {
                     this.canvas.beginPath();
                     this.canvas.rect(x*7, y*7, 7, 7);
                     if (cell) {
+                        this.liveCells++;
                         this.canvas.fill();
                     } else {
                         this.canvas.stroke();
                     }
                 });
             });
+            this.displayCount = this.liveCells;
             setTimeout(() => {
                 if(this.continue) this.update();
             }, 1);
@@ -239,6 +260,8 @@ export default {
         },
         patternChange(e) {
             this.continue = false;
+            this.goOrStop = 'Go';
+            this.startColor = 'success';
             this.currentPattern = "Random";
             switch(e){
                 case 'Acorn':
